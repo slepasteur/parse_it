@@ -4,6 +4,10 @@
 
 #include "parser_types.h"
 
+#include <iostream>
+#include <iterator>
+#include <type_traits>
+
 namespace parse_it {
 
 /**
@@ -11,7 +15,7 @@ namespace parse_it {
  * @param b The byte to parse.
  * @return A parser of type: i -> optional<(b, i)>
  */
-inline auto one_byte(std::byte b)
+constexpr inline auto one_byte(std::byte b)
 {
     return [b](parse_input_t input) -> parse_result_t<std::byte> {
         if (input.empty())
@@ -27,7 +31,7 @@ inline auto one_byte(std::byte b)
  * Create a parser of one byte of any value.
  * @return A parser of type: i -> optional<(b, i)>
  */
-inline auto any_byte()
+constexpr inline auto any_byte()
 {
     return [](parse_input_t input) -> parse_result_t<std::byte> {
         if (input.empty())
@@ -35,6 +39,28 @@ inline auto any_byte()
             return std::nullopt;
         }
         return std::pair(input[0], input.subspan(1));
+    };
+}
+
+/**
+ * Create a parser for a sequence of bytes.
+ * @param seq The sequence of byte to parse.
+ * @return A parser of type: i -> optional<(seq, i)>
+ */
+template <typename SEQ>
+constexpr inline auto byte_seq(SEQ&& seq)
+{
+    using sequence_type = std::remove_cv_t<std::remove_reference_t<SEQ>>;
+    return [seq = std::forward<SEQ>(seq)](parse_input_t input) -> parse_result_t<sequence_type> {
+        if (seq.size() > input.size())
+        {
+            return std::nullopt;
+        }
+        if (std::equal(seq.begin(), seq.end(), input.begin()))
+        {
+            return std::pair(seq, input.subspan(seq.size()));
+        }
+        return std::nullopt;
     };
 }
 
