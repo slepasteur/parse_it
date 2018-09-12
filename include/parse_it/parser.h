@@ -64,6 +64,22 @@ constexpr inline auto byte_seq(SEQ&& seq)
     };
 }
 
+/**
+ * Create a parser skipping n bytes.
+ * @param n The number of bytes to skip.
+ * @return A parser of type: i -> optional<(unit, i)>
+ */
+inline auto skip(size_t n)
+{
+    return [n](parse_input_t input) -> parse_result_t<unit> {
+        if (input.size() >= n)
+        {
+            return std::pair(unit{}, input.subspan(n));
+        }
+        return std::nullopt;
+    };
+}
+
 }
 
 #endif
