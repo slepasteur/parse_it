@@ -69,7 +69,7 @@ constexpr inline auto byte_seq(SEQ&& seq)
  * @param n The number of bytes to skip.
  * @return A parser of type: i -> optional<(unit, i)>
  */
-inline auto skip(size_t n)
+constexpr inline auto skip(size_t n)
 {
     return [n](parse_input_t input) -> parse_result_t<unit> {
         if (input.size() >= n)
@@ -77,6 +77,59 @@ inline auto skip(size_t n)
             return std::pair(unit{}, input.subspan(n));
         }
         return std::nullopt;
+    };
+}
+
+/**
+ * Create a parser of an uint8 values.
+ * @return A parser of type: i -> optional<(uint8, i)>
+ */
+constexpr inline auto uint8_parser()
+{
+    return [](parse_input_t input) -> parse_result_t<std::uint8_t> {
+        if (input.size() < 1)
+        {
+            return std::nullopt;
+        }
+        return std::pair(std::to_integer<std::uint8_t>(input[0]), input.subspan(1));
+    };
+}
+
+/**
+ * Create a parser of an uint16 values in little endian format.
+ * @return A parser of type: i -> optional<(uint16, i)>
+ */
+constexpr inline auto uint16_parser()
+{
+    return [](parse_input_t input) -> parse_result_t<std::uint16_t> {
+        if (input.size() < 2)
+        {
+            return std::nullopt;
+        }
+        std::uint16_t value = 
+            std::to_integer<std::uint8_t>(input[0])
+            | std::to_integer<std::uint8_t>(input[1]) << 8;
+        return std::pair(value, input.subspan(2));
+    };
+}
+
+/**
+ * Create a parser of an uint32 value in little endian format.
+ * @return A parser of type: i -> optional<(uint32, i)>
+ */
+constexpr inline auto uint32_parser()
+{
+    return [](parse_input_t input) -> parse_result_t<std::uint32_t> {
+        if (input.size() < 4)
+        {
+            return std::nullopt;
+        }
+        std::uint32_t value = 
+            std::to_integer<std::uint8_t>(input[0])
+            | std::to_integer<std::uint8_t>(input[1]) << 8
+            | std::to_integer<std::uint8_t>(input[2]) << 16
+            | std::to_integer<std::uint8_t>(input[3]) << 24;
+        return std::pair(value, input.subspan(4));
     };
 }
 
