@@ -9,7 +9,7 @@ using namespace parse_it;
 
 TEST_CASE("Operator ||")
 {
-    auto parser = one_byte(0x01_b) || one_byte(0x02_b) || one_byte(0x03_b);
+    constexpr auto parser = one_byte(0x01_b) || one_byte(0x02_b) || one_byte(0x03_b);
 
     SUBCASE("returns first alternative if it was successful.")
     {

@@ -9,7 +9,7 @@ using namespace parse_it;
 
 TEST_CASE("combine parser")
 {
-    const auto parser = combine([](auto first, auto, auto second){
+    constexpr auto parser = combine([](auto first, auto, auto second){
         return std::to_integer<int>(first) + std::to_integer<int>(second);
     }, one_byte(0x01_b), skip(1), one_byte(0x03_b));
 

@@ -53,14 +53,13 @@ class combiner<Head, Tail...>
 
 public:
     template<typename H, typename... Ts, typename = typename std::enable_if<(sizeof...(Ts) > 0)>::type>
-    combiner(H &&head, Ts &&... tail):
+    constexpr combiner(H &&head, Ts &&... tail):
         p_{std::forward<H>(head)},
         tail_{std::forward<Ts>(tail)...}
     {}
 
-    combiner(combiner&& other) = default;
-    combiner(const combiner& other) = default;
-
+    constexpr combiner(combiner&& other) = default;
+    constexpr combiner(const combiner& other) = default;
 
     auto operator()(parse_input_t data) const -> Result
     {
@@ -87,10 +86,10 @@ public:
     using Result = parse_result_t<std::tuple<parsed_t<Parser>>>;
 
     template<typename P>
-    combiner(P p): p_{std::move(p)} {}
+    constexpr combiner(P p): p_{std::move(p)} {}
 
-    combiner(combiner&& other) = default;
-    combiner(const combiner& other) = default;
+    constexpr combiner(combiner&& other) = default;
+    constexpr combiner(const combiner& other) = default;
 
     auto operator()(parse_input_t data) const -> Result
     {
@@ -106,7 +105,7 @@ public:
  * @return A combiner of parsers.
  */
 template<typename... Parsers>
-combiner<Parsers...> make_combiner(Parsers &&... parsers)
+constexpr combiner<Parsers...> make_combiner(Parsers &&... parsers)
 {
     return combiner<Parsers...>{parsers...};
 }

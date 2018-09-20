@@ -145,7 +145,7 @@ constexpr inline auto uint32_parser()
  * @return A parser of type: i -> optional<(a, i)>
  */
 template <typename F, typename... Ps>
-inline auto combine(F&& f, Ps&&... ps)
+constexpr inline auto combine(F&& f, Ps&&... ps)
 {
     auto combiner = details::make_combiner(std::forward<Ps>(ps)...);
     using T = std::invoke_result_t <F, details::parsed_t<Ps>...>;
@@ -168,7 +168,7 @@ inline auto combine(F&& f, Ps&&... ps)
 template<typename P1, typename P2, typename = std::enable_if_t<
     std::is_invocable_v<P1, parse_input_t> && std::is_invocable_v<P2, parse_input_t>
 >>
-inline auto operator||(P1 &&p1, P2 &&p2)
+constexpr inline auto operator||(P1 &&p1, P2 &&p2)
 {
     static_assert(std::is_same<details::parsed_t<P1>, details::parsed_t<P2>>::value,
                   "Both parser used in a || should parse the same type.");
