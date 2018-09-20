@@ -5,6 +5,7 @@ add_executable(parse_it_tests
     parser/byte_seq_tests.cpp
     parser/skip_tests.cpp
     parser/integral_tests.cpp
+    parser/combine_tests.cpp
 )
 
 target_link_libraries(parse_it_tests parse_it)

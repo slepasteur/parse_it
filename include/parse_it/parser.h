@@ -2,11 +2,11 @@
 #ifndef PARSE_IT_PARSER_H
 #define PARSE_IT_PARSER_H
 
-#include "parser_types.h"
-
-#include <iostream>
 #include <iterator>
 #include <type_traits>
+
+#include "parser_types.h"
+#include "parser_details.h"
 
 namespace parse_it {
 
@@ -132,6 +132,32 @@ constexpr inline auto uint32_parser()
         return std::pair(value, input.subspan(4));
     };
 }
+
+
+/**
+ * Combine multiple parsers through a combining function.
+ *
+ * If one of the parser fails, the combined parser fails. If every parser succeeds, f is called with all the results
+ * to provide the final result.
+ *
+ * @tparam F A function of type: 't1 -> t2 -> ... -> tN -> a' where t1 to tN are the results of parsers P1 to PN.
+ * @tparam Ps The parsers to combine.
+ * @return A parser of type: i -> optional<(a, i)>
+ */
+template <typename F, typename... Ps>
+inline auto combine(F&& f, Ps&&... ps)
+{
+    auto combiner = details::make_combiner(std::forward<Ps>(ps)...);
+    using T = std::invoke_result_t <F, details::parsed_t<Ps>...>;
+    return [f = std::forward<F>(f), combiner = std::move(combiner)](parse_input_t data) -> parse_result_t<T> {
+        auto result = combiner(data);
+        if (!result)
+        {
+            return std::nullopt;
+        }
+        return std::make_pair(std::apply(f, result->first), result->second);
+    };
+};
 
 }
 
