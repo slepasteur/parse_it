@@ -11,7 +11,7 @@ TEST_CASE("Operator ||")
 {
     auto parser = one_byte(0x01_b) || one_byte(0x02_b) || one_byte(0x03_b);
 
-    SUBCASE("Returns first alternative if it was successful.")
+    SUBCASE("returns first alternative if it was successful.")
     {
         constexpr auto data = std::array{0x1_b, 0x5_b};
         auto result = parser(data);
@@ -21,7 +21,7 @@ TEST_CASE("Operator ||")
         CHECK(result->second == expected_remaining);
     }
 
-    SUBCASE("Returns second alternative if the first one failed.")
+    SUBCASE("returns second alternative if the first one failed.")
     {
         constexpr auto data = std::array{0x2_b, 0x5_b};
         auto result = parser(data);
@@ -31,14 +31,14 @@ TEST_CASE("Operator ||")
         CHECK(result->second == expected_remaining);
     }
 
-    SUBCASE("Fails if none of the parsers succeeds.")
+    SUBCASE("fails if none of the parsers succeeds.")
     {
         constexpr auto data = std::array{0x4_b, 0x5_b};
         auto result = parser(data);
         REQUIRE(!result);
     }
 
-    SUBCASE("Fails if input is empty.")
+    SUBCASE("fails if input is empty.")
     {
         constexpr auto data = std::array<std::byte, 0>{};
         auto result = parser(data);

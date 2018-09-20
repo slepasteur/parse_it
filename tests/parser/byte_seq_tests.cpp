@@ -7,21 +7,12 @@
 
 using namespace parse_it;
 
-TEST_CASE("A sequence of bytes can be parsed.")
+TEST_CASE("Byte sequence parser")
 {
     constexpr auto seq = std::array{0x1_b, 0x2_b, 0x3_b, 0x4_b};
     constexpr auto parser = byte_seq(seq);
 
-    SUBCASE("Input containing only parsed value.")
-    {
-        const auto result = parser(seq);
-
-        REQUIRE(result);
-        CHECK(result->second.empty());
-        CHECK(std::equal(result->first.begin(), result->first.end(), seq.begin(), seq.end()));
-    }
-
-    SUBCASE("Input containing parsed value and more.")
+    SUBCASE("succeeds on input starting with expected values")
     {
         constexpr auto remaining = std::array{0x5_b, 0x6_b, 0x7_b, 0x8_b};
         const auto data = [&](){
@@ -33,11 +24,19 @@ TEST_CASE("A sequence of bytes can be parsed.")
         const auto result = parser(data);
 
         REQUIRE(result);
-        CHECK(std::equal(result->first.begin(), result->first.end(), seq.begin(), seq.end()));
-        CHECK(std::equal(result->second.begin(), result->second.end(), remaining.begin(), remaining.end()));
+
+        SUBCASE("and returns the parsed bytes.")
+        {
+            REQUIRE(std::equal(result->first.begin(), result->first.end(), seq.begin(), seq.end()));
+        }
+        
+        SUBCASE("and consumes the parsed bytes.")
+        {
+            REQUIRE(std::equal(result->second.begin(), result->second.end(), remaining.begin(), remaining.end()));
+        }
     }
 
-    SUBCASE("Empty input.")
+    SUBCASE("fails on empty input.")
     {
         const auto data = std::vector<std::byte>{};
         const auto result = parser(data);
@@ -45,9 +44,9 @@ TEST_CASE("A sequence of bytes can be parsed.")
         REQUIRE(!result);
     }
 
-    SUBCASE("Input without expected byte at beginning.")
+    SUBCASE("fails when expected values are not at the beginning of the input.")
     {
-        const auto data = std::vector<std::byte>{0x5_b, 0x6_b, 0x7_b, 0x8_b};
+        const auto data = std::vector<std::byte>{0x5_b, 0x1_b, 0x2_b, 0x3_b, 0x4_b, 0x6_b};
         const auto result = parser(data);
 
         REQUIRE(!result);
