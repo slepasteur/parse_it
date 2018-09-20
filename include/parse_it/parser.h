@@ -159,6 +159,31 @@ inline auto combine(F&& f, Ps&&... ps)
     };
 };
 
+/**
+ * Try the first parser and, if it fails try the second one.
+ * @tparam P1 A parser of a: sv -> optional<(a, sv)>.
+ * @tparam P2 A parser of a: sv -> optional<(a, sv)>.
+ * @return A parser of a: sv -> optional<(a, sv)>.
+ */
+template<typename P1, typename P2, typename = std::enable_if_t<
+    std::is_invocable_v<P1, parse_input_t> && std::is_invocable_v<P2, parse_input_t>
+>>
+inline auto operator||(P1 &&p1, P2 &&p2)
+{
+    static_assert(std::is_same<details::parsed_t<P1>, details::parsed_t<P2>>::value,
+                  "Both parser used in a || should parse the same type.");
+    using T = details::parsed_t<P1>;
+    return [p1 = std::forward<P1>(p1), p2 = std::forward<P2>(p2)](parse_input_t data) -> parse_result_t<T> {
+        if (data.empty())
+        {
+            return std::nullopt;
+        }
+        auto r1 = p1(data);
+        if (r1) return r1;
+        return p2(data);
+    };
+};
+
 }
 
 #endif
