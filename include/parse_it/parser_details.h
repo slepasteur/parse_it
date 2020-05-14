@@ -13,13 +13,13 @@
 namespace parse_it::details {
 
 // Get the return type of parser P: optional<pair<T, parse_input_t>>.
-template<typename P>
+template <typename P>
 using parser_opt_pair_t = std::result_of_t<P(parse_input_t)>;
 // Get the pair type contained in parser P's return type: pair<T, parse_input_t>.
-template<typename P>
+template <typename P>
 using parser_pair_t = typename parser_opt_pair_t<P>::value_type;
 // Get type parsed by parser P.
-template<typename P>
+template <typename P>
 using parsed_t = typename parser_pair_t<P>::first_type;
 
 /**
@@ -36,7 +36,7 @@ using parsed_t = typename parser_pair_t<P>::first_type;
  *
  * @tparam Parsers The parsers to combine.
  */
-template<typename... Parsers>
+template <typename... Parsers>
 class combiner;
 
 /**
@@ -44,59 +44,64 @@ class combiner;
  * @tparam Head The first parser.
  * @tparam Tail The rest of the parsers.
  */
-template<typename Head, typename... Tail>
+template <typename Head, typename... Tail>
 class combiner<Head, Tail...>
 {
-    using Result = parse_result_t<std::tuple<parsed_t<Head>, parsed_t<Tail>...>>;
-    std::decay_t<Head> p_;
-    combiner<Tail...> tail_;
+  using Result = parse_result_t<std::tuple<parsed_t<Head>, parsed_t<Tail>...>>;
+  std::decay_t<Head> p_;
+  combiner<Tail...> tail_;
 
 public:
-    template<typename H, typename... Ts, typename = typename std::enable_if<(sizeof...(Ts) > 0)>::type>
-    constexpr combiner(H &&head, Ts &&... tail):
-        p_{std::forward<H>(head)},
-        tail_{std::forward<Ts>(tail)...}
-    {}
+  template <typename H, typename... Ts, typename = typename std::enable_if<(sizeof...(Ts) > 0)>::type>
+  constexpr combiner(H&& head, Ts&&... tail)
+      : p_{std::forward<H>(head)}
+      , tail_{std::forward<Ts>(tail)...}
+  {}
 
-    constexpr combiner(combiner&& other) = default;
-    constexpr combiner(const combiner& other) = default;
+  constexpr combiner(combiner&& other) = default;
+  constexpr combiner(const combiner& other) = default;
 
-    auto operator()(parse_input_t data) const -> Result
+  auto operator()(parse_input_t data) const -> Result
+  {
+    auto r = p_(data);
+    if (!r)
     {
-        auto r = p_(data);
-        if (!r) {
-            return std::nullopt;
-        }
-        auto tail_result = tail_(r->second);
-        if (!tail_result) return std::nullopt;
-        return std::make_pair(std::tuple_cat(std::make_tuple(r->first), tail_result->first), tail_result->second);
+      return std::nullopt;
     }
+    auto tail_result = tail_(r->second);
+    if (!tail_result)
+      return std::nullopt;
+    return std::make_pair(std::tuple_cat(std::make_tuple(r->first), tail_result->first), tail_result->second);
+  }
 };
 
 /**
  * Specialization of combiner for one parser.
  * @tparam Parser The parser.
  */
-template<typename Parser>
+template <typename Parser>
 class combiner<Parser>
 {
-    std::decay_t<Parser> p_;
+  std::decay_t<Parser> p_;
 
 public:
-    using Result = parse_result_t<std::tuple<parsed_t<Parser>>>;
+  using Result = parse_result_t<std::tuple<parsed_t<Parser>>>;
 
-    template<typename P>
-    constexpr combiner(P p): p_{std::move(p)} {}
+  template <typename P>
+  constexpr combiner(P p)
+      : p_{std::move(p)}
+  {}
 
-    constexpr combiner(combiner&& other) = default;
-    constexpr combiner(const combiner& other) = default;
+  constexpr combiner(combiner&& other) = default;
+  constexpr combiner(const combiner& other) = default;
 
-    auto operator()(parse_input_t data) const -> Result
-    {
-        auto r = p_(data);
-        if (!r) return std::nullopt;
-        return std::make_pair(std::make_tuple(r->first), r->second);
-    }
+  auto operator()(parse_input_t data) const -> Result
+  {
+    auto r = p_(data);
+    if (!r)
+      return std::nullopt;
+    return std::make_pair(std::make_tuple(r->first), r->second);
+  }
 };
 
 /**
@@ -104,12 +109,12 @@ public:
  * @tparam Parsers The parsers to combine.
  * @return A combiner of parsers.
  */
-template<typename... Parsers>
-constexpr combiner<Parsers...> make_combiner(Parsers &&... parsers)
+template <typename... Parsers>
+constexpr combiner<Parsers...> make_combiner(Parsers&&... parsers)
 {
-    return combiner<Parsers...>{parsers...};
+  return combiner<Parsers...>{parsers...};
 }
 
-}
+} // namespace parse_it::details
 
 #endif

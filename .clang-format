@@ -1,0 +1,53 @@
+---
+Language:        Cpp
+BasedOnStyle:  LLVM
+AlignAfterOpenBracket: AlwaysBreak
+AllowShortBlocksOnASingleLine: true
+AllowShortFunctionsOnASingleLine: Inline
+AlwaysBreakTemplateDeclarations: Yes
+BraceWrapping:   
+  AfterClass:      true
+  AfterControlStatement: true
+  AfterEnum:       true
+  AfterFunction:   true
+  AfterNamespace:  false
+  AfterObjCDeclaration: false
+  AfterStruct:     true
+  AfterUnion:      true
+  AfterExternBlock: false
+  BeforeCatch:     true
+  BeforeElse:      true
+  IndentBraces:    false
+  SplitEmptyFunction: false
+  SplitEmptyRecord: false
+  SplitEmptyNamespace: false
+BreakBeforeBinaryOperators: NonAssignment
+BreakBeforeBraces: Custom
+BreakConstructorInitializers: BeforeComma
+ColumnLimit:     120
+IncludeBlocks:   Regroup
+IncludeCategories:
+    #Every doctest related files.
+  - Regex:           '.*doctest.*'
+    Priority:        20
+
+    # STL headers (e.g. <vector>)
+  - Regex:           '<[^\.]+>'
+    Priority:        2
+
+    # External library headers (e.g <rxcpp/rx.hpp>)
+  - Regex:           '<.*>'
+    Priority:        3
+
+  - Regex:           '.*'
+    Priority:        10
+
+IndentWidth: 2 
+PointerAlignment: Left
+ReflowComments: false
+SpaceBeforeCtorInitializerColon: false
+TabWidth:        2
+UseTab:          Never
+ContinuationIndentWidth: 2
+...
+

@@ -10,6 +10,7 @@
 
 #include <cstddef>
 #include <optional>
+
 #include "gsl/gsl-lite.hpp"
 
 namespace parse_it {
@@ -18,15 +19,15 @@ namespace parse_it {
  * Parser input and output types.
  */
 using parse_input_t = gsl::span<const std::byte>;
-template<typename T>
+template <typename T>
 using parse_result_t = std::optional<std::pair<T, parse_input_t>>;
 
 /**
  * A unit struct representing empty data.
  */
-struct unit {};
+struct unit
+{};
 
-}
-
+} // namespace parse_it
 
 #endif
