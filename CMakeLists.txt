@@ -23,8 +23,8 @@ add_library(parse_it INTERFACE)
 add_library(parse_it::parse_it ALIAS parse_it)
 
 target_include_directories(parse_it INTERFACE
-    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/parse_it>
-    $<INSTALL_INTERFACE:include/parse_it>
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+    $<INSTALL_INTERFACE:include>
 )
 
 target_link_libraries(parse_it

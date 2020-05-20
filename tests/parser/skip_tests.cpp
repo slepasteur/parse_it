@@ -1,8 +1,8 @@
 #include <algorithm>
 #include <array>
 
-#include "parser.h"
-#include "utils/utils.h"
+#include "parse_it/parser.h"
+#include "parse_it/utils/utils.h"
 
 #include <doctest/doctest.h>
 
