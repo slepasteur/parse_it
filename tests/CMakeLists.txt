@@ -17,9 +17,11 @@ find_package(doctest MODULE REQUIRED)
 
 target_link_libraries(parse_it_tests
   PRIVATE
-    project_warnings
-    parse_it
+    parse_it_warnings
+    parse_it::parse_it
     doctest::doctest
 )
+
+set_target_properties(parse_it_tests PROPERTIES CXX_EXTENSIONS OFF)
 
 add_test(NAME parse_it_tests COMMAND parse_it_tests)
