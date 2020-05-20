@@ -8,6 +8,8 @@
  * @see parser.h for more information about parsers.
  */
 
+#include <tuple>
+
 #include "parser_types.h"
 
 namespace parse_it::details {

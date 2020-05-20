@@ -1,0 +1,6 @@
+[requires]
+doctest/2.3.7
+
+[generators]
+cmake_find_package
+cmake_paths

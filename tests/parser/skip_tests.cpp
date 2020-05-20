@@ -1,9 +1,10 @@
-#include <vector>
+#include <algorithm>
+#include <array>
 
 #include "parser.h"
 #include "utils/utils.h"
 
-#include "../doctest.h"
+#include <doctest/doctest.h>
 
 using namespace parse_it;
 
@@ -21,8 +22,8 @@ TEST_CASE("Skip parser")
 
     SUBCASE("and consumes the given number of bytes.")
     {
-      const auto expected_remaining = gsl::span(&data[skip_size], data.size() - skip_size);
-      CHECK(result->second == expected_remaining);
+      const auto expected_remaining = std::span(&data[skip_size], data.size() - skip_size);
+      REQUIRE(std::ranges::equal(result->second, expected_remaining));
     }
   }
 

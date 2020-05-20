@@ -1,8 +1,22 @@
 cmake_minimum_required(VERSION 3.8)
 project(parse_it)
 
-set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Werror -Wall -Wno-missing-braces -fno-omit-frame-pointer -fsanitize=address")
+# Link this 'library' to use the warnings specified in CompilerWarnings.cmake
+add_library(project_warnings INTERFACE)
+
+# standard compiler warnings
+include(cmake/CompilerWarnings.cmake)
+set_project_warnings(project_warnings)
+
+# Link this 'library' to set the c++ standard / compile-time options requested
+add_library(project_options INTERFACE)
+target_compile_features(project_options INTERFACE cxx_std_20)
+
+# Sanitizer options if supported by compiler.
+# Enable by using -DSANITIZE_ADDRESS=ON / -DSANITIZE_MEMORY=ON
+#  / -DSANITIZE_UNDEFINED_BEHAVIOR=ON / -DSANITIZE_THREAD=ON
+include(cmake/Sanitizers.cmake)
+enable_sanitizers(project_options)
 
 
 add_library(parse_it INTERFACE)
@@ -11,6 +25,16 @@ target_include_directories(parse_it INTERFACE
     $<INSTALL_INTERFACE:include/parse_it>
 )
 
-add_subdirectory(tests)
-enable_testing()
-add_test(NAME ParseItUnitTest COMMAND parse_it_tests)
+target_link_libraries(parse_it
+  INTERFACE
+    project_options
+)
+
+if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
+    include(CTest)
+endif()
+
+if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME AND BUILD_TESTING)
+    add_subdirectory(tests)
+endif()
+

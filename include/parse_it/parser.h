@@ -107,7 +107,8 @@ constexpr inline auto uint16_parser()
     {
       return std::nullopt;
     }
-    std::uint16_t value = std::to_integer<std::uint8_t>(input[0]) | std::to_integer<std::uint8_t>(input[1]) << 8;
+    std::uint16_t value =
+      static_cast<uint16_t>(std::to_integer<std::uint8_t>(input[0]) | (std::to_integer<std::uint8_t>(input[1]) << 8));
     return std::pair(value, input.subspan(2));
   };
 }
@@ -123,9 +124,9 @@ constexpr inline auto uint32_parser()
     {
       return std::nullopt;
     }
-    std::uint32_t value = std::to_integer<std::uint8_t>(input[0]) | std::to_integer<std::uint8_t>(input[1]) << 8
-                          | std::to_integer<std::uint8_t>(input[2]) << 16
-                          | std::to_integer<std::uint8_t>(input[3]) << 24;
+    std::uint32_t value = static_cast<uint32_t>(
+      std::to_integer<std::uint8_t>(input[0]) | std::to_integer<std::uint8_t>(input[1]) << 8
+      | std::to_integer<std::uint8_t>(input[2]) << 16 | std::to_integer<std::uint8_t>(input[3]) << 24);
     return std::pair(value, input.subspan(4));
   };
 }
@@ -153,7 +154,7 @@ constexpr inline auto combine(F&& f, Ps&&... ps)
     }
     return std::make_pair(std::apply(f, result->first), result->second);
   };
-};
+}
 
 /**
  * Try the first parser and, if it fails try the second one.
@@ -180,7 +181,7 @@ constexpr inline auto operator||(P1&& p1, P2&& p2)
       return r1;
     return p2(data);
   };
-};
+}
 
 } // namespace parse_it
 

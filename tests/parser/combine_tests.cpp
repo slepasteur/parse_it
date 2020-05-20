@@ -1,9 +1,10 @@
-#include <vector>
+#include <algorithm>
+#include <array>
 
 #include "parser.h"
 #include "utils/utils.h"
 
-#include "../doctest.h"
+#include <doctest/doctest.h>
 
 using namespace parse_it;
 
@@ -24,8 +25,8 @@ TEST_CASE("combine parser")
 
     SUBCASE("and consumes the parsed data from the input.")
     {
-      const auto expected_remaining = gsl::span(&data[3], data.size() - 3);
-      CHECK(result->second == expected_remaining);
+      const auto expected_remaining = std::span(&data[3], data.size() - 3);
+      REQUIRE(std::ranges::equal(result->second, expected_remaining));
     }
   }
 

@@ -1,9 +1,10 @@
-#include <vector>
+#include <algorithm>
+#include <array>
 
 #include "parser.h"
 #include "utils/utils.h"
 
-#include "../doctest.h"
+#include <doctest/doctest.h>
 
 using namespace parse_it;
 
@@ -17,8 +18,8 @@ TEST_CASE("Operator ||")
     auto result = parser(data);
     REQUIRE(result);
     CHECK(result->first == 0x1_b);
-    const auto expected_remaining = gsl::span(&data[1], data.size() - 1);
-    CHECK(result->second == expected_remaining);
+    const auto expected_remaining = std::span(&data[1], data.size() - 1);
+    CHECK(std::ranges::equal(result->second, expected_remaining));
   }
 
   SUBCASE("returns second alternative if the first one failed.")
@@ -27,8 +28,8 @@ TEST_CASE("Operator ||")
     auto result = parser(data);
     REQUIRE(result);
     CHECK(result->first == 0x2_b);
-    const auto expected_remaining = gsl::span(&data[1], data.size() - 1);
-    CHECK(result->second == expected_remaining);
+    const auto expected_remaining = std::span(&data[1], data.size() - 1);
+    CHECK(std::ranges::equal(result->second, expected_remaining));
   }
 
   SUBCASE("fails if none of the parsers succeeds.")

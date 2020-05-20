@@ -1,3 +1,5 @@
+cmake_minimum_required(VERSION 3.8)
+
 add_executable(parse_it_tests
     test_main.cpp
     parser/any_byte_tests.cpp
@@ -11,4 +13,13 @@ add_executable(parse_it_tests
     byte_span_tests.cpp
 )
 
-target_link_libraries(parse_it_tests parse_it)
+find_package(doctest MODULE REQUIRED)
+
+target_link_libraries(parse_it_tests
+  PRIVATE
+    project_warnings
+    parse_it
+    doctest::doctest
+)
+
+add_test(NAME parse_it_tests COMMAND parse_it_tests)

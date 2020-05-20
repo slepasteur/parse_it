@@ -4,7 +4,7 @@
 #include "parser.h"
 #include "utils/utils.h"
 
-#include "../doctest.h"
+#include <doctest/doctest.h>
 
 using namespace parse_it;
 
