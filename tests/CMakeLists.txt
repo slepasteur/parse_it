@@ -9,6 +9,8 @@ add_executable(parse_it_tests
     parser/integral_tests.cpp
     parser/combine_tests.cpp
     parser/or_tests.cpp
+    parser/nbytes_tests.cpp
+    parser/fmap_tests.cpp
     byte_view_tests.cpp
     byte_span_tests.cpp
 )

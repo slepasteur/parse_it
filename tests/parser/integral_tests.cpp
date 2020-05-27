@@ -71,7 +71,7 @@ TEST_CASE("Uint32 parser")
     const auto result = parser(data);
 
     REQUIRE(result);
-    SUBCASE("and returns a uint16 parsed as little endian.") { REQUIRE(result->first == 0x04030201); }
+    SUBCASE("and returns a uint32 parsed as little endian.") { REQUIRE(result->first == 0x04030201); }
 
     SUBCASE("and consumes the input.") { REQUIRE(result->second.empty()); }
   }
@@ -79,6 +79,30 @@ TEST_CASE("Uint32 parser")
   SUBCASE("fails if input is too small.")
   {
     constexpr auto data = std::array{0x1_b, 0x2_b, 0x3_b};
+    const auto result = parser(data);
+
+    REQUIRE(!result);
+  }
+}
+
+TEST_CASE("Uint64 parser")
+{
+  constexpr auto parser = uint64_parser();
+
+  SUBCASE("succeeds when given 8 bytes")
+  {
+    constexpr auto data = std::array{0x1_b, 0x2_b, 0x3_b, 0x4_b, 0x5_b, 0x6_b, 0x7_b, 0x8_b};
+    const auto result = parser(data);
+
+    REQUIRE(result);
+    SUBCASE("and returns a uint64 parsed as little endian.") { REQUIRE(result->first == 0x0807060504030201); }
+
+    SUBCASE("and consumes the input.") { REQUIRE(result->second.empty()); }
+  }
+
+  SUBCASE("fails if input is too small.")
+  {
+    constexpr auto data = std::array{0x1_b, 0x2_b, 0x3_b, 0x4_b, 0x5_b, 0x6_b, 0x7_b};
     const auto result = parser(data);
 
     REQUIRE(!result);

@@ -82,6 +82,22 @@ constexpr inline auto skip(size_t n)
 }
 
 /**
+ * Create a parser of n bytes.
+ * @param n The number of bytes to parse.
+ * @return A parser of type: i -> optional<(span, i)>
+ */
+constexpr inline auto n_bytes(size_t n)
+{
+  return [n](parse_input_t input) -> parse_result_t<std::span<const std::byte>> {
+    if (input.size() < n)
+    {
+      return std::nullopt;
+    }
+    return std::pair(input.subspan(0, n), input.subspan(n));
+  };
+}
+
+/**
  * Create a parser of an uint8 values.
  * @return A parser of type: i -> optional<(uint8, i)>
  */
@@ -108,7 +124,7 @@ constexpr inline auto uint16_parser()
       return std::nullopt;
     }
     std::uint16_t value =
-      static_cast<uint16_t>(std::to_integer<std::uint8_t>(input[0]) | (std::to_integer<std::uint8_t>(input[1]) << 8));
+      static_cast<uint16_t>(std::to_integer<std::uint16_t>(input[0]) | (std::to_integer<std::uint16_t>(input[1]) << 8));
     return std::pair(value, input.subspan(2));
   };
 }
@@ -124,10 +140,50 @@ constexpr inline auto uint32_parser()
     {
       return std::nullopt;
     }
-    std::uint32_t value = static_cast<uint32_t>(
-      std::to_integer<std::uint8_t>(input[0]) | std::to_integer<std::uint8_t>(input[1]) << 8
-      | std::to_integer<std::uint8_t>(input[2]) << 16 | std::to_integer<std::uint8_t>(input[3]) << 24);
+    std::uint32_t value = std::to_integer<std::uint32_t>(input[0]) | std::to_integer<std::uint32_t>(input[1]) << 8
+                          | std::to_integer<std::uint32_t>(input[2]) << 16
+                          | std::to_integer<std::uint32_t>(input[3]) << 24;
     return std::pair(value, input.subspan(4));
+  };
+}
+
+/**
+ * Create a parser of an uint64 value in little endian format.
+ * @return A parser of type: i -> optional<(uint64, i)>
+ */
+constexpr inline auto uint64_parser()
+{
+  return [](parse_input_t input) -> parse_result_t<std::uint64_t> {
+    if (input.size() < 8)
+    {
+      return std::nullopt;
+    }
+    std::uint64_t value =
+      std::to_integer<std::uint64_t>(input[0]) | std::to_integer<std::uint64_t>(input[1]) << 8
+      | std::to_integer<std::uint64_t>(input[2]) << 16 | std::to_integer<std::uint64_t>(input[3]) << 24
+      | std::to_integer<std::uint64_t>(input[4]) << 32 | std::to_integer<std::uint64_t>(input[5]) << 40
+      | std::to_integer<std::uint64_t>(input[6]) << 48 | std::to_integer<std::uint64_t>(input[7]) << 56;
+    return std::pair(value, input.subspan(8));
+  };
+}
+
+/**
+ * Apply a function to the result of a parser.
+ * @tparam F A function from a to b: a -> b
+ * @tparam P A parser of a: i -> optional<(a, i)>
+ * @return A parser of type: i -> optional<(b, i)>
+ */
+template <typename F, typename P>
+constexpr inline auto fmap(F&& f, P&& p)
+{
+  using R = parse_result_t<decltype(f(details::parsed_t<P>{}))>;
+  return [f = std::forward<F>(f), p = std::forward<P>(p)](parse_input_t data) -> R {
+    auto r = p(data);
+    if (!r)
+    {
+      return std::nullopt;
+    }
+    return std::make_pair(f(r->first), r->second);
   };
 }
 
