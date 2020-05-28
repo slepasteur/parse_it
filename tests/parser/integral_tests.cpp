@@ -61,6 +61,30 @@ TEST_CASE("Uint16 parser")
   }
 }
 
+TEST_CASE("Uint16 parser big endian")
+{
+  constexpr auto parser = uint16_parser(big_endian{});
+
+  SUBCASE("succeeds when given two bytes")
+  {
+    constexpr auto data = std::array{0x1_b, 0x2_b};
+    const auto result = parser(data);
+
+    REQUIRE(result);
+    SUBCASE("and returns a uint16 parsed as little endian.") { REQUIRE(result->first == 0x0102); }
+
+    SUBCASE("and consumes the input.") { REQUIRE(result->second.empty()); }
+  }
+
+  SUBCASE("fails if input is too small.")
+  {
+    constexpr auto data = std::array{0x1_b};
+    const auto result = parser(data);
+
+    REQUIRE(!result);
+  }
+}
+
 TEST_CASE("Uint32 parser")
 {
   constexpr auto parser = uint32_parser();
@@ -85,6 +109,30 @@ TEST_CASE("Uint32 parser")
   }
 }
 
+TEST_CASE("Uint32 parser big endian")
+{
+  constexpr auto parser = uint32_parser(big_endian{});
+
+  SUBCASE("succeeds when given four bytes")
+  {
+    constexpr auto data = std::array{0x1_b, 0x2_b, 0x3_b, 0x4_b};
+    const auto result = parser(data);
+
+    REQUIRE(result);
+    SUBCASE("and returns a uint16 parsed as little endian.") { REQUIRE(result->first == 0x01020304); }
+
+    SUBCASE("and consumes the input.") { REQUIRE(result->second.empty()); }
+  }
+
+  SUBCASE("fails if input is too small.")
+  {
+    constexpr auto data = std::array{0x1_b, 0x2_b, 0x3_b};
+    const auto result = parser(data);
+
+    REQUIRE(!result);
+  }
+}
+
 TEST_CASE("Uint64 parser")
 {
   constexpr auto parser = uint64_parser();
@@ -96,6 +144,30 @@ TEST_CASE("Uint64 parser")
 
     REQUIRE(result);
     SUBCASE("and returns a uint64 parsed as little endian.") { REQUIRE(result->first == 0x0807060504030201); }
+
+    SUBCASE("and consumes the input.") { REQUIRE(result->second.empty()); }
+  }
+
+  SUBCASE("fails if input is too small.")
+  {
+    constexpr auto data = std::array{0x1_b, 0x2_b, 0x3_b, 0x4_b, 0x5_b, 0x6_b, 0x7_b};
+    const auto result = parser(data);
+
+    REQUIRE(!result);
+  }
+}
+
+TEST_CASE("Uint64 parser big endian")
+{
+  constexpr auto parser = uint64_parser(big_endian{});
+
+  SUBCASE("succeeds when given 8 bytes")
+  {
+    constexpr auto data = std::array{0x1_b, 0x2_b, 0x3_b, 0x4_b, 0x5_b, 0x6_b, 0x7_b, 0x8_b};
+    const auto result = parser(data);
+
+    REQUIRE(result);
+    SUBCASE("and returns a uint64 parsed as big endian.") { REQUIRE(result->first == 0x0102030405060708); }
 
     SUBCASE("and consumes the input.") { REQUIRE(result->second.empty()); }
   }
