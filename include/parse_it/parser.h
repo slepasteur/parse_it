@@ -3,6 +3,7 @@
 #define PARSE_IT_PARSER_H
 
 #include <algorithm>
+#include <concepts>
 #include <iterator>
 #include <type_traits>
 
@@ -102,10 +103,9 @@ constexpr inline auto n_bytes(size_t n)
  * Create a parser of an integral values of type T using the given endianness.
  * @return A parser of type: i -> optional<(t, i)>
  */
-template <typename T, typename Endianness = little_endian>
+template <std::integral T, typename Endianness = little_endian>
 constexpr inline auto integral_parser(Endianness = Endianness{})
 {
-  static_assert(std::is_integral_v<T>);
   return [](parse_input_t input) -> parse_result_t<T> {
     constexpr auto size = sizeof(T);
     if (input.size() < size)
