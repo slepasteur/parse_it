@@ -99,93 +99,30 @@ constexpr inline auto n_bytes(size_t n)
 }
 
 /**
- * Create a parser of an uint8 values.
- * @return A parser of type: i -> optional<(uint8, i)>
+ * Create a parser of an integral values of type T using the given endianness.
+ * @return A parser of type: i -> optional<(t, i)>
  */
-constexpr inline auto uint8_parser()
+template <typename T, typename Endianness = little_endian>
+constexpr inline auto integral_parser(Endianness = Endianness{})
 {
-  return [](parse_input_t input) -> parse_result_t<std::uint8_t> {
-    if (input.size() < 1)
-    {
-      return std::nullopt;
-    }
-    return std::pair(std::to_integer<std::uint8_t>(input[0]), input.subspan(1));
-  };
-}
-
-/**
- * Create a parser of an uint16 values using the given endianness.
- * @return A parser of type: i -> optional<(uint16, i)>
- */
-template <typename Endianness = little_endian>
-constexpr inline auto uint16_parser(Endianness = Endianness{})
-{
-  return [](parse_input_t input) -> parse_result_t<std::uint16_t> {
-    if (input.size() < 2)
+  static_assert(std::is_integral_v<T>);
+  return [](parse_input_t input) -> parse_result_t<T> {
+    constexpr auto size = sizeof(T);
+    if (input.size() < size)
     {
       return std::nullopt;
     }
 
-    std::uint16_t value = 0;
+    T value = 0;
     if constexpr (std::is_same_v<Endianness, little_endian>)
     {
-      std::copy(input.begin(), std::next(input.begin(), 2), reinterpret_cast<std::byte*>(&value));
+      std::copy(input.begin(), std::next(input.begin(), size), reinterpret_cast<std::byte*>(&value));
     }
     else
     {
-      std::reverse_copy(input.begin(), std::next(input.begin(), 2), reinterpret_cast<std::byte*>(&value));
+      std::reverse_copy(input.begin(), std::next(input.begin(), size), reinterpret_cast<std::byte*>(&value));
     }
-    return std::pair(value, input.subspan(2));
-  };
-}
-
-/**
- * Create a parser of an uint32 value using the given endianness.
- * @return A parser of type: i -> optional<(uint32, i)>
- */
-template <typename Endianness = little_endian>
-constexpr inline auto uint32_parser(Endianness = Endianness{})
-{
-  return [](parse_input_t input) -> parse_result_t<std::uint32_t> {
-    if (input.size() < 4)
-    {
-      return std::nullopt;
-    }
-    std::uint32_t value = 0;
-    if constexpr (std::is_same_v<Endianness, little_endian>)
-    {
-      std::copy(input.begin(), std::next(input.begin(), 4), reinterpret_cast<std::byte*>(&value));
-    }
-    else
-    {
-      std::reverse_copy(input.begin(), std::next(input.begin(), 4), reinterpret_cast<std::byte*>(&value));
-    }
-    return std::pair(value, input.subspan(4));
-  };
-}
-
-/**
- * Create a parser of an uint64 value in little endian format.
- * @return A parser of type: i -> optional<(uint64, i)>
- */
-template <typename Endianness = little_endian>
-constexpr inline auto uint64_parser(Endianness = Endianness{})
-{
-  return [](parse_input_t input) -> parse_result_t<std::uint64_t> {
-    if (input.size() < 8)
-    {
-      return std::nullopt;
-    }
-    std::uint64_t value = 0;
-    if constexpr (std::is_same_v<Endianness, little_endian>)
-    {
-      std::copy(input.begin(), std::next(input.begin(), 8), reinterpret_cast<std::byte*>(&value));
-    }
-    else
-    {
-      std::reverse_copy(input.begin(), std::next(input.begin(), 8), reinterpret_cast<std::byte*>(&value));
-    }
-    return std::pair(value, input.subspan(8));
+    return std::pair(value, input.subspan(size));
   };
 }
 

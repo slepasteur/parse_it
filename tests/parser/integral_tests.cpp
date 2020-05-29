@@ -10,7 +10,7 @@ using namespace parse_it;
 
 TEST_CASE("Uint8 parser")
 {
-  constexpr auto parser = uint8_parser();
+  constexpr auto parser = integral_parser<std::uint8_t>();
 
   SUBCASE("succeeds when given one byte")
   {
@@ -39,7 +39,7 @@ TEST_CASE("Uint8 parser")
 
 TEST_CASE("Uint16 parser")
 {
-  constexpr auto parser = uint16_parser();
+  constexpr auto parser = integral_parser<std::uint16_t>();
 
   SUBCASE("succeeds when given two bytes")
   {
@@ -63,7 +63,7 @@ TEST_CASE("Uint16 parser")
 
 TEST_CASE("Uint16 parser big endian")
 {
-  constexpr auto parser = uint16_parser(big_endian{});
+  constexpr auto parser = integral_parser<std::uint16_t>(big_endian{});
 
   SUBCASE("succeeds when given two bytes")
   {
@@ -87,7 +87,7 @@ TEST_CASE("Uint16 parser big endian")
 
 TEST_CASE("Uint32 parser")
 {
-  constexpr auto parser = uint32_parser();
+  constexpr auto parser = integral_parser<std::uint32_t>();
 
   SUBCASE("succeeds when given four bytes")
   {
@@ -111,7 +111,7 @@ TEST_CASE("Uint32 parser")
 
 TEST_CASE("Uint32 parser big endian")
 {
-  constexpr auto parser = uint32_parser(big_endian{});
+  constexpr auto parser = integral_parser<std::uint32_t>(big_endian{});
 
   SUBCASE("succeeds when given four bytes")
   {
@@ -135,7 +135,7 @@ TEST_CASE("Uint32 parser big endian")
 
 TEST_CASE("Uint64 parser")
 {
-  constexpr auto parser = uint64_parser();
+  constexpr auto parser = integral_parser<std::uint64_t>();
 
   SUBCASE("succeeds when given 8 bytes")
   {
@@ -159,7 +159,7 @@ TEST_CASE("Uint64 parser")
 
 TEST_CASE("Uint64 parser big endian")
 {
-  constexpr auto parser = uint64_parser(big_endian{});
+  constexpr auto parser = integral_parser<std::uint64_t>(big_endian{});
 
   SUBCASE("succeeds when given 8 bytes")
   {
