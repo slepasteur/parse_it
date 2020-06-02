@@ -2,11 +2,12 @@
 #include <array>
 
 #include "parse_it/parser.h"
-#include "parse_it/utils/utils.h"
+#include "parse_it/utils/byte_litterals.h"
 
 #include <doctest/doctest.h>
 
 using namespace parse_it;
+using namespace parse_it::byte_litterals;
 
 TEST_CASE("Skip parser")
 {
