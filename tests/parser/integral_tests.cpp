@@ -11,7 +11,7 @@ using namespace parse_it::byte_litterals;
 
 TEST_CASE("Uint8 parser")
 {
-  constexpr auto parser = integral_parser<std::uint8_t>();
+  constexpr auto parser = arithmetic_parser<std::uint8_t>();
 
   SUBCASE("succeeds when given one byte")
   {
@@ -40,7 +40,7 @@ TEST_CASE("Uint8 parser")
 
 TEST_CASE("Uint16 parser little endian")
 {
-  constexpr auto parser = integral_parser<std::uint16_t, std::endian::little>();
+  constexpr auto parser = arithmetic_parser<std::uint16_t, std::endian::little>();
 
   SUBCASE("succeeds when given two bytes")
   {
@@ -64,7 +64,7 @@ TEST_CASE("Uint16 parser little endian")
 
 TEST_CASE("Uint16 parser big endian")
 {
-  constexpr auto parser = integral_parser<std::uint16_t>();
+  constexpr auto parser = arithmetic_parser<std::uint16_t>();
 
   SUBCASE("succeeds when given two bytes")
   {
@@ -88,7 +88,7 @@ TEST_CASE("Uint16 parser big endian")
 
 TEST_CASE("Uint32 parser little endian")
 {
-  constexpr auto parser = integral_parser<std::uint32_t, std::endian::little>();
+  constexpr auto parser = arithmetic_parser<std::uint32_t, std::endian::little>();
 
   SUBCASE("succeeds when given four bytes")
   {
@@ -112,7 +112,7 @@ TEST_CASE("Uint32 parser little endian")
 
 TEST_CASE("Uint32 parser big endian")
 {
-  constexpr auto parser = integral_parser<std::uint32_t>();
+  constexpr auto parser = arithmetic_parser<std::uint32_t>();
 
   SUBCASE("succeeds when given four bytes")
   {
@@ -136,7 +136,7 @@ TEST_CASE("Uint32 parser big endian")
 
 TEST_CASE("Uint64 parser little endian")
 {
-  constexpr auto parser = integral_parser<std::uint64_t, std::endian::little>();
+  constexpr auto parser = arithmetic_parser<std::uint64_t, std::endian::little>();
 
   SUBCASE("succeeds when given 8 bytes")
   {
@@ -160,7 +160,7 @@ TEST_CASE("Uint64 parser little endian")
 
 TEST_CASE("Uint64 parser big endian")
 {
-  constexpr auto parser = integral_parser<std::uint64_t>();
+  constexpr auto parser = arithmetic_parser<std::uint64_t>();
 
   SUBCASE("succeeds when given 8 bytes")
   {

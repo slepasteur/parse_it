@@ -101,11 +101,12 @@ constexpr inline auto n_bytes(size_t n)
 }
 
 /**
- * Create a parser of an integral values of type T using the given endianness.
+ * Create a parser of an arithmetic values of type T using the given endianness.
  * @return A parser of type: i -> optional<(t, i)>
  */
-template <std::integral T, std::endian FROM_ENDIAN = std::endian::big>
-constexpr inline auto integral_parser()
+template <typename T> concept arithmetic = std::integral<T> || std::floating_point<T>;
+template <arithmetic T, std::endian FROM_ENDIAN = std::endian::big>
+constexpr inline auto arithmetic_parser()
 {
   return [](parse_input_t input) -> parse_result_t<T> {
     static_assert(
