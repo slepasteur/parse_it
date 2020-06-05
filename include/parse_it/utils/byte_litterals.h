@@ -17,6 +17,6 @@ constexpr std::byte operator"" _b(char c)
   return static_cast<std::byte>(c);
 }
 
-} // namespace parse_it
+} // namespace parse_it::byte_litterals
 
 #endif

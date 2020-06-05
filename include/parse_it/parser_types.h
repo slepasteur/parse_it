@@ -10,7 +10,6 @@
 
 #include <cstddef>
 #include <optional>
-
 #include <span>
 
 namespace parse_it {
