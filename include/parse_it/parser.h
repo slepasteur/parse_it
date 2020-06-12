@@ -204,6 +204,32 @@ constexpr inline auto operator||(P1&& p1, P2&& p2)
   };
 }
 
+/**
+ * Execute the same parser until it fails.
+ * @tparam P A parser of a: i -> optional<(a, i)>.
+ * @tparam F An accumulating function: a -> t init -> t.
+ * @tparam T The initial accumulating value.
+ * @return A parser of t: i -> optional<(t, i)>.
+ * If the parser fails at instantly returns a parser of the initial value: i ->
+ * optional<(init, i)>.
+ *        */
+template <typename F, typename T, typename P>
+inline auto many(P&& p, T i, F&& f)
+{
+  return [f = std::forward<F>(f), i = std::move(i), p = std::forward<P>(p)](parse_input_t data) -> parse_result_t<T> {
+    T value = std::move(i);
+    auto r = p(data);
+    if (!r)
+      return std::make_pair(value, data);
+    while (r)
+    {
+      value = f(std::move(value), r->first);
+      r = p(r->second);
+    }
+    return std::make_pair(value, r->second);
+  };
+}
+
 } // namespace parse_it
 
 #endif

@@ -11,6 +11,7 @@ add_executable(parse_it_tests
     parser/or_tests.cpp
     parser/nbytes_tests.cpp
     parser/fmap_tests.cpp
+    parser/many_test.cpp
   )
 
 find_package(doctest MODULE REQUIRED)
