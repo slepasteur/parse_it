@@ -6,10 +6,10 @@
 #include <bit>
 #include <concepts>
 #include <iterator>
-#include <type_traits>
 
 #include "parser_details.h"
 #include "parser_types.h"
+#include "utils/arithmetic.h"
 
 namespace parse_it {
 
@@ -104,8 +104,6 @@ constexpr inline auto n_bytes(size_t n)
  * Create a parser of an arithmetic values of type T using the given endianness.
  * @return A parser of type: i -> optional<(t, i)>
  */
-template <typename T>
-concept arithmetic = std::integral<T> || std::floating_point<T>;
 template <arithmetic T, std::endian FROM_ENDIAN = std::endian::big>
 constexpr inline auto arithmetic_parser()
 {
